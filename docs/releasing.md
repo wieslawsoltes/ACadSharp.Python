@@ -97,6 +97,14 @@ and [adding a publisher](https://docs.pypi.org/trusted-publishers/adding-a-publi
 
 ## Cut a release
 
+Before the first manual workflow run, merge the reviewed implementation branch
+into the repository's default branch. GitHub only enables `workflow_dispatch`
+for workflows that exist on the default branch; after that initial merge, a
+manual run can select a release branch or tag. This applies to both `release.yml`
+and `docs.yml`. Keeping the implementation on its feature branch does not
+publish a package or deploy documentation.
+See GitHub's [manual workflow prerequisites](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
+
 1. Update the version in `pyproject.toml`,
    `packaging/native/pyproject.toml`, both Python `__version__` values, and the
    exact native/base dependency pins, and the `Version` in
