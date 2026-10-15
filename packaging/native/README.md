@@ -4,6 +4,10 @@ This platform wheel contains the NativeAOT shared library used by
 `acadsharp.native`. Install `acadsharp[native]` to obtain both packages.
 No .NET runtime or Python.NET installation is required for native operations.
 
+Prebuilt wheels for 0.1.0 target Linux x64/Arm64, macOS Arm64 (Apple Silicon),
+and Windows x64. Intel macOS has no prebuilt native wheel in this release;
+install `acadsharp[managed]` or build locally with `--rid osx-x64` on an Intel Mac.
+
 Build from the complete ACadSharp.Python source checkout:
 
 ```sh

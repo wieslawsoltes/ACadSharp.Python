@@ -7,6 +7,11 @@ managed backend provides the complete CLR interop surface; this native backend
 provides object construction, editing, inspection and file I/O subject to the
 NativeAOT restrictions below.
 
+Prebuilt wheels for 0.1.0 target Linux x64/Arm64, macOS Arm64 (Apple Silicon),
+and Windows x64. Intel macOS users can use the [managed backend](installation.md#managed-backend)
+or [build locally](#building-from-source) with `--rid osx-x64`. Hosted CI skips
+Intel macOS, so this release does not include an Intel macOS native wheel.
+
 ```sh
 pip install acadsharp-native
 ```
@@ -151,6 +156,9 @@ git submodule update --init --recursive
 python scripts/build_native.py
 ```
 
+For a local Intel macOS build, run `python scripts/build_native.py --rid osx-x64`
+on an Intel Mac. The release CI omission does not remove this build target.
+
 The script publishes to `artifacts/native/<RID>/`, alongside build provenance
 and the upstream/.NET license notices. It accepts `--rid` and `--output`.
 NativeAOT builds should run on the target operating system; the supported release
@@ -169,7 +177,7 @@ to `native.load(path)`. A built wheel finds its library through the
 
 ## C ABI
 
-[`acadsharp_native.h`](https://github.com/wieslawsoltes/ACadSharp.Python/blob/feature/python-bindings/native/ACadSharp.Native/acadsharp_native.h) declares the
+[`acadsharp_native.h`](https://github.com/wieslawsoltes/ACadSharp.Python/blob/v0.1.0/native/ACadSharp.Native/acadsharp_native.h) declares the
 three exports: `acadsharp_abi_version`, `acadsharp_call` and `acadsharp_free`.
 ABI version 1 accepts null-terminated UTF-8 JSON requests. Every allocated
 response, including an error, must be freed exactly once with `acadsharp_free`.

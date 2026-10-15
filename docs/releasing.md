@@ -35,7 +35,9 @@ upstream source inputs and licenses, and rejects generated build directories or
 Git metadata in the source archive.
 
 To build the native companion locally, select your runtime identifier:
-`linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`, or `win-x64`.
+`linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`, or `win-x64`. Local
+`osx-x64` builds remain available for Intel Macs; the 0.1.0 hosted CI and release
+wheel matrix includes Apple Silicon only on macOS.
 
 ```sh
 python scripts/build_native.py --rid osx-arm64
@@ -57,11 +59,15 @@ complete source archive or recursive checkout.
 
 - Builds and audits the managed wheel and source archive.
 - Installs the built wheel on Ubuntu, Windows, and macOS under Python 3.11–3.14.
-- Builds native wheels for Linux x64/Arm64, macOS x64/Arm64, and Windows x64.
+- Builds native wheels for Linux x64/Arm64, macOS Arm64 (Apple Silicon), and Windows x64.
 - Builds Linux binaries inside the official `manylinux_2_28` images and runs
   `auditwheel repair` to inspect and package their ELF dependencies.
 - Tests each installed native wheel without Python.NET installed.
 - Checks lint, generated API reference consistency, and documentation links.
+
+Intel macOS is omitted from hosted CI and has no prebuilt native wheel in 0.1.0.
+Intel Mac users can install `acadsharp[managed]` or build the native companion
+locally with `--rid osx-x64`. Linux x64 and Windows x64 remain in the release matrix.
 
 Native builds run on the corresponding CPU architecture. The Linux wheel's
 manylinux tag declares its actual glibc compatibility; Linux musl/Alpine and
@@ -73,22 +79,44 @@ requirement independently of the Python interpreter used to build the wheel.
 
 An owner must configure external services before the first public release:
 
-1. Create GitHub environments named `pypi` and `testpypi`. Add the repository's
-   chosen release protection rules to `pypi`.
-2. On each package index, create pending Trusted Publishers for **both**
-   `acadsharp` and `acadsharp-native`: owner `wieslawsoltes`, repository
-   `ACadSharp.Python`, workflow `release.yml`, and environment `pypi` or
-   `testpypi` respectively. For existing projects, add the publisher in the
-   project's publishing settings. Package names must be available or owned by
-   the publishing account.
+1. Create the four GitHub environments listed below. Add the repository's
+   chosen release protection rules to both production environments.
+2. On each package index, create a pending Trusted Publisher for each project
+   with owner `wieslawsoltes`, repository `ACadSharp.Python`, workflow
+   `release.yml`, and the project's exact environment from this table. For
+   existing projects, add the publisher in the project's publishing settings.
+   Package names must be available or owned by the publishing account.
 3. In GitHub Settings → Pages, select **GitHub Actions** as the build source.
    The `docs.yml` workflow deploys the rendered site through the `github-pages`
    environment on main, version tags, or manual dispatch.
 
-The repository's `pypi`/`testpypi` environments and GitHub Pages workflow source
-were configured during initial setup. PyPI and TestPyPI publisher registration
-still needs the package owner's account on each index; repository environments
-alone do not grant permission to publish packages.
+| Project | PyPI environment | TestPyPI environment | Downloaded release artifacts |
+| --- | --- | --- | --- |
+| `acadsharp` | `pypi` | `testpypi` | `distributions-managed` (wheel and source archive) |
+| `acadsharp-native` | `pypi-native` | `testpypi-native` | `distributions-native-*` (native wheels) |
+
+PyPI rejects a second **pending** publisher with an identical owner, repository,
+workflow and environment for a different project name. The separate environments
+make each pending publishing identity unique while allowing both packages to use
+`release.yml`. Registering `acadsharp-native` with `pypi` instead of `pypi-native`
+will collide with the pending `acadsharp` publisher. Apply the same separation
+when configuring TestPyPI.
+
+The publish job runs once per project. Each run downloads only that project's
+artifact group and checks its distribution filename prefix before upload. The
+GitHub release waits for both publishing runs to succeed and attaches all built
+distributions.
+
+On 2026-10-15, both production PyPI pending publishers were verified with the
+project/environment mapping above. All four GitHub publishing environments and
+the GitHub Pages workflow source are configured. These registrations authorize
+the matching workflow identities; package publication still requires a successful
+release run.
+
+TestPyPI publisher registration has not been verified. Before a rehearsal,
+configure both TestPyPI projects with their respective `testpypi` and
+`testpypi-native` environments. GitHub environment creation alone does not grant
+permission to publish on either package index.
 
 Trusted Publishing exchanges GitHub's short-lived OIDC identity for an upload
 credential. No PyPI API token belongs in the repository or its secrets. See
@@ -120,8 +148,9 @@ See GitHub's [manual workflow prerequisites](https://docs.github.com/en/actions/
    production requires the matching version tag. Use a fresh version if that
    filename already exists on TestPyPI.
 5. Pushing a version tag triggers a fresh complete build and test run. After the
-   `pypi` environment permits the publish job, it uploads both packages with
-   attestations and creates a GitHub release containing the exact distributions.
+   `pypi` and `pypi-native` environments permit their respective publishing runs,
+   each run uploads its package with attestations. Once both succeed, the workflow
+   creates a GitHub release containing all exact distributions.
 
 Be aware that **pushing any `v*` tag automatically requests a production release**;
 manual `testpypi` dispatch does not cancel that trigger. Rehearse from a branch
