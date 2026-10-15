@@ -134,5 +134,9 @@ jobs:
           dotnet-version: '10.0.x'
       - run: python -m pip install -e '.[dev,docs]'
       - run: python -m ruff check src tests scripts setup.py packaging
+      - name: Check package versions and pinned upstream provenance
+        env:
+          RELEASE_INDEX: testpypi
+        run: python scripts/check_release.py
       - run: python scripts/generate_api.py --assembly src/acadsharp/_managed/ACadSharp.dll --check
       - run: python -m mkdocs build --strict
