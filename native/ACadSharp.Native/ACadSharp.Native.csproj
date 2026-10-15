@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>acadsharp_native</AssemblyName>
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../external/ACadSharp/src/ACadSharp/ACadSharp.csproj" />
+    <!-- Upstream uses reflection internally for DXF maps and cloning. Preserve its
+         implementation as well as public metadata for the Python object bridge. -->
+    <TrimmerRootAssembly Include="ACadSharp" />
+    <RdXmlFile Include="rd.xml" />
+  </ItemGroup>
+</Project>

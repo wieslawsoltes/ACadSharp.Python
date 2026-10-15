@@ -1,0 +1,21 @@
+<Directives>
+  <Application>
+    <Assembly Name="ACadSharp" Dynamic="Required All" />
+    <!-- ACadSharp publicly exposes these BCL containers. Their metadata is not
+         rooted by preserving the ACadSharp assembly alone. -->
+    <Assembly Name="System.Private.CoreLib">
+      <Type Name="System.Collections.Generic.List`1" Dynamic="Required All" />
+      <Type Name="System.Collections.Generic.Dictionary`2" Dynamic="Required All" />
+      <Type Name="System.Collections.Generic.Dictionary`2+KeyCollection" Dynamic="Required All" />
+      <Type Name="System.Collections.Generic.Dictionary`2+ValueCollection" Dynamic="Required All" />
+      <Type Name="System.Collections.Generic.KeyValuePair`2" Dynamic="Required All" />
+      <Type Name="System.Collections.Generic.HashSet`1" Dynamic="Required All" />
+      <Type Name="System.Collections.ObjectModel.Collection`1" Dynamic="Required All" />
+      <Type Name="System.Collections.ObjectModel.ReadOnlyCollection`1" Dynamic="Required All" />
+      <Type Name="System.Array" Dynamic="Required All" />
+    </Assembly>
+    <Assembly Name="System.ObjectModel">
+      <Type Name="System.Collections.ObjectModel.ObservableCollection`1" Dynamic="Required All" />
+    </Assembly>
+  </Application>
+</Directives>
