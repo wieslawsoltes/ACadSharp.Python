@@ -16,6 +16,7 @@ def check(directory: Path) -> None:
         for path in (
             "acadsharp/__init__.py", "acadsharp/py.typed", "acadsharp/api.json",
             "acadsharp/_managed/ACadSharp.dll", "acadsharp/_managed/ACadSharp.xml",
+            "acadsharp/_managed/ACadSharp.Python.dll", "acadsharp/_managed/ACadSharp.Python.xml",
             "acadsharp/_managed/ACadSharp.runtimeconfig.json",
             "acadsharp/_managed/build-info.json",
             "acadsharp/_managed/licenses/ACadSharp.txt",
@@ -28,6 +29,7 @@ def check(directory: Path) -> None:
                  for name in archive.getnames()}
         for path in (
             "scripts/build_managed.py", "upstream-versions.json",
+            "managed/ACadSharp.Python/ACadSharp.Python.csproj",
             "external/ACadSharp/src/ACadSharp/ACadSharp.csproj",
             "external/ACadSharp/src/ACadSharp/CadDocument.cs",
             "external/ACadSharp/src/ACadSharp.snk",

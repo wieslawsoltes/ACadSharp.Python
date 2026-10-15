@@ -7,12 +7,15 @@ import os
 from pathlib import Path
 import subprocess
 import tomllib
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 base = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
 native = tomllib.loads((ROOT / "packaging/native/pyproject.toml").read_text())["project"]
 version = base["version"]
 assert native["version"] == version, "Native and managed versions differ"
+adapter = ET.parse(ROOT / "managed/ACadSharp.Python/ACadSharp.Python.csproj")
+assert adapter.findtext(".//Version") == version, "Managed adapter version differs"
 assert f"acadsharp-native=={version}" in base["optional-dependencies"]["native"]
 assert f"acadsharp=={version}" in native["dependencies"]
 for source in ("src/acadsharp/__init__.py", "packaging/native/src/acadsharp_native/__init__.py"):

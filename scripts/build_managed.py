@@ -12,7 +12,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM = ROOT / "external" / "ACadSharp"
-PROJECT = UPSTREAM / "src" / "ACadSharp" / "ACadSharp.csproj"
+PROJECT = ROOT / "managed" / "ACadSharp.Python" / "ACadSharp.Python.csproj"
 DEFAULT_OUTPUT = ROOT / "src" / "acadsharp" / "_managed"
 FRAMEWORK = "net10.0"
 
@@ -22,11 +22,12 @@ def source_digest() -> str:
     digest = hashlib.sha256()
     inputs = [Path(__file__).resolve(), ROOT / "upstream-versions.json",
               UPSTREAM / "LICENSE", UPSTREAM / "src/CSUtilities/LICENSE"]
-    for path in (UPSTREAM / "src").rglob("*"):
-        if path.is_file() and path.suffix in {
-            ".cs", ".csproj", ".projitems", ".props", ".targets", ".snk"
-        } and not {"bin", "obj", ".git"}.intersection(path.parts):
-            inputs.append(path)
+    for directory in (UPSTREAM / "src", ROOT / "managed"):
+        for path in directory.rglob("*"):
+            if path.is_file() and path.suffix in {
+                ".cs", ".csproj", ".projitems", ".props", ".targets", ".snk"
+            } and not {"bin", "obj", ".git"}.intersection(path.parts):
+                inputs.append(path)
     for path in sorted(inputs):
         digest.update(path.relative_to(ROOT).as_posix().encode())
         digest.update(path.read_bytes())
@@ -54,7 +55,8 @@ def build(output: Path = DEFAULT_OUTPUT, *, force: bool = False) -> Path:
     source_hash = source_digest()
     info_file = output / "build-info.json"
     required = [output / name for name in (
-        "ACadSharp.dll", "ACadSharp.xml", "ACadSharp.runtimeconfig.json"
+        "ACadSharp.dll", "ACadSharp.xml", "ACadSharp.runtimeconfig.json",
+        "ACadSharp.Python.dll", "ACadSharp.Python.xml",
     )]
     if not force and info_file.is_file() and all(path.is_file() for path in required):
         if json.loads(info_file.read_text()).get("source_sha256") == source_hash:
@@ -69,12 +71,11 @@ def build(output: Path = DEFAULT_OUTPUT, *, force: bool = False) -> Path:
     subprocess.run([
         "dotnet", "build", str(PROJECT), "--configuration", "Release",
         "--framework", FRAMEWORK, "--output", str(artifacts),
-        "-p:TargetFrameworks=" + FRAMEWORK,
         "-p:GeneratePackageOnBuild=false", "-p:ContinuousIntegrationBuild=true",
         "-p:Deterministic=true", "--nologo",
     ], check=True)
     output.mkdir(parents=True, exist_ok=True)
-    for name in ("ACadSharp.dll", "ACadSharp.xml"):
+    for name in ("ACadSharp.dll", "ACadSharp.xml", "ACadSharp.Python.dll", "ACadSharp.Python.xml"):
         shutil.copy2(artifacts / name, output / name)
     (output / "ACadSharp.runtimeconfig.json").write_text(json.dumps({
         "runtimeOptions": {

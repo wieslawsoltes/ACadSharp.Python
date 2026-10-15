@@ -1,4 +1,4 @@
-include LICENSE THIRD_PARTY_NOTICES.md README.md pyproject.toml setup.py upstream-versions.json
+include LICENSE THIRD_PARTY_NOTICES.md README.md CONTRIBUTING.md CHANGELOG.md pyproject.toml setup.py upstream-versions.json
 include .gitmodules mkdocs.yml
 recursive-include src *.py *.pyi *.json py.typed
 recursive-include scripts *.py *.sh
@@ -6,6 +6,7 @@ recursive-include tests *.py *.dxf *.dwg
 recursive-include docs *.md *.css
 recursive-include examples *.py
 recursive-include native *.cs *.csproj *.json *.xml *.h *.md
+recursive-include managed *.cs *.csproj *.json *.xml *.md
 recursive-include packaging *.py *.toml *.md
 recursive-include external/ACadSharp *.cs *.csproj *.projitems *.props *.targets *.snk *.resx
 include external/ACadSharp/LICENSE external/ACadSharp/README.md
@@ -15,5 +16,7 @@ prune external/ACadSharp/src/ACadSharp/bin
 prune external/ACadSharp/src/ACadSharp/obj
 prune native/ACadSharp.Native/bin
 prune native/ACadSharp.Native/obj
+prune managed/ACadSharp.Python/bin
+prune managed/ACadSharp.Python/obj
 prune src/acadsharp/_managed
 global-exclude __pycache__ *.py[cod] .DS_Store

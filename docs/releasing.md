@@ -4,7 +4,7 @@ The repository publishes two distributions at the same version:
 
 | Distribution | Contents | Runtime requirements |
 | --- | --- | --- |
-| `acadsharp` | Python interface, API catalog, managed assembly, XML reference, licenses | Python 3.11+; install `[managed]` and .NET 10 for Python.NET |
+| `acadsharp` | Python interface, API catalog, managed assembly and interop adapter, XML reference, licenses | Python 3.11+; install `[managed]` and .NET 10 for Python.NET |
 | `acadsharp-native` | Platform-specific NativeAOT shared library and licenses | Python 3.11+ and supported native platform; no .NET installation |
 
 The universal managed wheel is built from the source distribution, which includes
@@ -85,6 +85,11 @@ An owner must configure external services before the first public release:
    The `docs.yml` workflow deploys the rendered site through the `github-pages`
    environment on main, version tags, or manual dispatch.
 
+The repository's `pypi`/`testpypi` environments and GitHub Pages workflow source
+were configured during initial setup. PyPI and TestPyPI publisher registration
+still needs the package owner's account on each index; repository environments
+alone do not grant permission to publish packages.
+
 Trusted Publishing exchanges GitHub's short-lived OIDC identity for an upload
 credential. No PyPI API token belongs in the repository or its secrets. See
 [PyPI's Trusted Publishing guide](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
@@ -94,7 +99,9 @@ and [adding a publisher](https://docs.pypi.org/trusted-publishers/adding-a-publi
 
 1. Update the version in `pyproject.toml`,
    `packaging/native/pyproject.toml`, both Python `__version__` values, and the
-   exact native/base dependency pins. Add the release's changes to the changelog.
+   exact native/base dependency pins, and the `Version` in
+   `managed/ACadSharp.Python/ACadSharp.Python.csproj`. Add the release's changes to
+   the changelog.
 2. If updating ACadSharp, commit both recursive submodule revisions, update
    `upstream-versions.json`, rebuild, and regenerate the API reference. Review the
    upstream version's supported CAD formats and any changed public types.
