@@ -32,6 +32,8 @@ The public .NET spelling remains intact: `StartPoint`, `Layers`, `Add`, and `Rea
 
 An optional Native AOT backend runs through `ctypes` without Python.NET or an installed .NET runtime. It provides its own documented operation set; it does **not** expose the entire managed object model. See the [native backend guide](https://wieslawsoltes.github.io/ACadSharp.Python/native/) for supported operations, builds, platforms and limitations.
 
+Native wheels for 0.1.0 target Linux x64/Arm64, macOS Arm64 (Apple Silicon), and Windows x64. Intel Mac users can use the managed backend or build the native library locally with `--rid osx-x64`.
+
 - [Installation and runtime setup](https://wieslawsoltes.github.io/ACadSharp.Python/installation/)
 - [Quickstart and executable examples](https://wieslawsoltes.github.io/ACadSharp.Python/quickstart/)
 - [Working with the object model](https://wieslawsoltes.github.io/ACadSharp.Python/object-model/)

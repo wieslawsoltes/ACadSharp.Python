@@ -35,7 +35,9 @@ upstream source inputs and licenses, and rejects generated build directories or
 Git metadata in the source archive.
 
 To build the native companion locally, select your runtime identifier:
-`linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`, or `win-x64`.
+`linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`, or `win-x64`. Local
+`osx-x64` builds remain available for Intel Macs; the 0.1.0 hosted CI and release
+wheel matrix includes Apple Silicon only on macOS.
 
 ```sh
 python scripts/build_native.py --rid osx-arm64
@@ -57,11 +59,15 @@ complete source archive or recursive checkout.
 
 - Builds and audits the managed wheel and source archive.
 - Installs the built wheel on Ubuntu, Windows, and macOS under Python 3.11–3.14.
-- Builds native wheels for Linux x64/Arm64, macOS x64/Arm64, and Windows x64.
+- Builds native wheels for Linux x64/Arm64, macOS Arm64 (Apple Silicon), and Windows x64.
 - Builds Linux binaries inside the official `manylinux_2_28` images and runs
   `auditwheel repair` to inspect and package their ELF dependencies.
 - Tests each installed native wheel without Python.NET installed.
 - Checks lint, generated API reference consistency, and documentation links.
+
+Intel macOS is omitted from hosted CI and has no prebuilt native wheel in 0.1.0.
+Intel Mac users can install `acadsharp[managed]` or build the native companion
+locally with `--rid osx-x64`. Linux x64 and Windows x64 remain in the release matrix.
 
 Native builds run on the corresponding CPU architecture. The Linux wheel's
 manylinux tag declares its actual glibc compatibility; Linux musl/Alpine and

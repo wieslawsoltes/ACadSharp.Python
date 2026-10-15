@@ -24,6 +24,8 @@ The base `acadsharp` distribution keeps managed initialization lazy. The `[manag
 
 See [Native AOT](native.md) for the `acadsharp[native]` extra, available wheel platforms and how to build a native shared library. Native use does not require Python.NET or an installed .NET runtime. A native wheel has to match your operating system and architecture.
 
+Prebuilt native wheels for 0.1.0 target Linux x64/Arm64, macOS Arm64 (Apple Silicon), and Windows x64. On Intel macOS, use the [managed backend](#managed-backend) or [build the native library locally](native.md#building-from-source) with `--rid osx-x64`; an Intel macOS native wheel is not included in this release.
+
 ## From a Git checkout
 
 Install the .NET 10 SDK, then:

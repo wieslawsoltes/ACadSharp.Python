@@ -9,4 +9,5 @@ Initial Python distribution of the pinned ACadSharp public object model.
 - DXF/DWG files and bytes helpers, including ASCII and binary DXF.
 - Compiled adapters for upstream color operations returning stack-only spans.
 - Optional Native AOT package for the operation set documented in the native guide.
+- Native wheels for Linux x64/Arm64, macOS Arm64, and Windows x64. Intel macOS users can use the managed backend or a local `osx-x64` native build; this release omits hosted Intel macOS CI and its native wheel.
 - Reproducible managed/native packaging, CI, release workflows and documentation.
