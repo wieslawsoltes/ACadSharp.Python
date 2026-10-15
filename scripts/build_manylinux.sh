@@ -2,6 +2,11 @@
 # Called inside an official manylinux_2_28 container by build.yml.
 set -euo pipefail
 export PATH="/opt/python/cp312-cp312/bin:$PATH"
+# The mounted Actions checkout belongs to the host runner, while the build
+# container runs as root. Trust only these known repository paths for provenance.
+git config --global --add safe.directory "$PWD"
+git config --global --add safe.directory "$PWD/external/ACadSharp"
+git config --global --add safe.directory "$PWD/external/ACadSharp/src/CSUtilities"
 dnf install -y clang zlib-devel openssl-libs libicu
 curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/acadsharp-dotnet-install.sh
 bash /tmp/acadsharp-dotnet-install.sh --channel 10.0 --install-dir /opt/acadsharp-dotnet
