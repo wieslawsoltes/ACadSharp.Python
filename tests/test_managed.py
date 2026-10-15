@@ -262,6 +262,12 @@ def test_delegate_callback_and_namespace_star_import():
     exports = {}
     exec("from acadsharp.entities import *", exports)
     assert exports["Line"] is Line
+    subprocess.run(
+        [sys.executable, "-c", "from acadsharp.header import *; "
+         "assert CadHeader; from acadsharp.classes import *; assert DxfClass; "
+         "from acadsharp.types import *; assert Units"],
+        check=True,
+    )
 
 
 def test_missing_assembly_and_conflicting_runtime_configuration(tmp_path):
