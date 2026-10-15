@@ -96,7 +96,9 @@ def get_type(fullname: str):
     names = []
     current = clr_type
     while current is not None:
-        names.append(str(current.Name).split("`")[0])
+        # Keep arity: Python.NET accepts CLR names containing backticks. A
+        # non-generic type may share the same name (ExtendedDataRecord<T>).
+        names.append(str(current.Name))
         current = current.DeclaringType
     value = namespace(str(clr_type.Namespace))
     for name in reversed(names):
