@@ -69,8 +69,8 @@ jobs:
             image: quay.io/pypa/manylinux_2_28_aarch64:latest
           - os: macos-15
             rid: osx-arm64
-          - os: macos-15-intel
-            rid: osx-x64
+          # Intel macOS remains available through local builds; hosted CI and
+          # release wheels currently cover Apple Silicon only on macOS.
           - os: windows-2022
             rid: win-x64
     runs-on: ${{ matrix.os }}
