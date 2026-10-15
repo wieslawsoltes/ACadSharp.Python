@@ -1,0 +1,74 @@
+# ACadSharp.Objects.Evaluations.BlockAlignmentGrip
+
+`class` · `ACadSharp` · CLR name: `ACadSharp.Objects.Evaluations.BlockAlignmentGrip`
+
+Represents a BLOCKALIGNMENTGRIP object.
+
+Object name F:ACadSharp.DxfFileToken.ObjectBlockAlignmentGrip Dxf class name F:ACadSharp.DxfSubclassMarker.BlockAlignmentGrip
+
+Base type: `ACadSharp.Objects.Evaluations.BlockGrip`. Inherited members are documented on their declaring type.
+
+Interfaces: `ACadSharp.Classes.IDxfClassDefined`, `ACadSharp.IHandledCadObject`, `ACadSharp.INamedCadObject`.
+
+```python
+import acadsharp
+Type = acadsharp.get_type('ACadSharp.Objects.Evaluations.BlockAlignmentGrip')
+```
+
+## Declared public members
+
+Signatures retain CLR types and names. Python.NET resolves overloads and converts compatible Python values at call time. Property setters are shown only when public. Operators retain their CLR names; Python.NET also maps supported operators to Python syntax.
+
+### .ctor
+
+```text
+ACadSharp.Objects.Evaluations.BlockAlignmentGrip()
+```
+
+### GetDxfClass
+
+```text
+ACadSharp.Classes.DxfClass GetDxfClass()
+```
+
+Documentation inherited from: `base member`.
+
+### AlignmentX
+
+```text
+System.Double AlignmentX { get; set; }
+```
+
+Gets or sets the alignment in the X direction.
+
+### AlignmentY
+
+```text
+System.Double AlignmentY { get; set; }
+```
+
+Gets or sets the alignment in the Y direction.
+
+### AlignmentZ
+
+```text
+System.Double AlignmentZ { get; set; }
+```
+
+Gets or sets the alignment in the Z direction.
+
+### ObjectName
+
+```text
+System.String ObjectName { get; }
+```
+
+Documentation inherited from: `base member`.
+
+### SubclassMarker
+
+```text
+System.String SubclassMarker { get; }
+```
+
+Documentation inherited from: `base member`.

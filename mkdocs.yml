@@ -1,0 +1,23 @@
+site_name: ACadSharp.Python
+site_description: Complete Python access to the ACadSharp object model
+site_url: https://wieslawsoltes.github.io/ACadSharp.Python/
+repo_url: https://github.com/wieslawsoltes/ACadSharp.Python
+repo_name: wieslawsoltes/ACadSharp.Python
+strict: true
+theme:
+  name: readthedocs
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - Object model: object-model.md
+  - Python helpers: python-api.md
+  - DXF and DWG I/O: io.md
+  - Python/.NET interop: interop.md
+  - Native AOT: native.md
+  - API reference: reference/index.md
+  - Troubleshooting: troubleshooting.md
+  - Releases: releasing.md
+validation:
+  nav:
+    omitted_files: ignore
