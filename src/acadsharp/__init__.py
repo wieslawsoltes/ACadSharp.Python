@@ -26,7 +26,7 @@ def api():
 def __getattr__(name):
     if name in {"read", "write", "loads", "dumps"}:
         value = getattr(import_module("._io", __package__), name)
-    elif name in {"entities", "tables", "objects", "io", "geometry", "header", "classes", "types", "native"}:
+    elif name in {"entities", "tables", "objects", "io", "geometry", "header", "classes", "types", "colors", "native"}:
         value = import_module(f".{name}", __package__)
     elif not name.startswith("_"):
         # Preserve the actual CLR types: no wrappers, copies, or reduced model.
