@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77", "wheel>=0.45"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acadsharp-native"
+version = "0.1.0"
+description = "Self-contained NativeAOT shared library for the acadsharp Python package"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = ["acadsharp==0.1.0"]
+authors = [{name = "Wiesław Šoltés"}]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: C#",
+  "Topic :: Scientific/Engineering",
+]
+
+[project.urls]
+Repository = "https://github.com/wieslawsoltes/ACadSharp.Python"
+Documentation = "https://wieslawsoltes.github.io/ACadSharp.Python/"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["acadsharp_native"]
