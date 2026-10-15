@@ -65,8 +65,9 @@ complete source archive or recursive checkout.
 
 Native builds run on the corresponding CPU architecture. The Linux wheel's
 manylinux tag declares its actual glibc compatibility; Linux musl/Alpine and
-Windows Arm64 wheels are not currently published. macOS wheels use the deployment
-target produced by their builder; the wheel filename declares that requirement.
+Windows Arm64 wheels are not currently published. macOS wheel tags are derived
+from the shared library's Mach-O deployment target; the filename declares that
+requirement independently of the Python interpreter used to build the wheel.
 
 ## One-time service configuration
 
