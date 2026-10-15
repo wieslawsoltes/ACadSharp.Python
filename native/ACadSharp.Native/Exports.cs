@@ -116,7 +116,17 @@ public static unsafe class Exports
             case "invoke":
             {
                 var match = Bind(targetType.GetMethods(flags).Where(m => m.Name == name && !m.ContainsGenericParameters), Arguments(request), Signature(request));
-                object? result = ((MethodInfo)match.Method).Invoke(target, match.Arguments);
+                // ReadOnlySpan<byte> cannot be boxed by MethodInfo.Invoke. These
+                // are the only byref-like return signatures in the pinned API;
+                // preserve their original names with a concrete byte[] result.
+                object? result;
+                if (match.Method.DeclaringType == typeof(Color) && target is Color color && name == "GetRgb")
+                    result = color.GetRgb().ToArray();
+                else if (match.Method.DeclaringType == typeof(Color) && target is Color trueColor && name == "GetTrueColorRgb")
+                    result = trueColor.GetTrueColorRgb().ToArray();
+                else if (match.Method.DeclaringType == typeof(Color) && name == "GetIndexRGB")
+                    result = Color.GetIndexRGB((byte)match.Arguments[0]!).ToArray();
+                else result = ((MethodInfo)match.Method).Invoke(target, match.Arguments);
                 var byrefs = match.Method.GetParameters().Select((p, i) => (p, i)).Where(pair => pair.p.ParameterType.IsByRef).ToArray();
                 if (byrefs.Length == 0) return Encode(result);
                 return new JsonObject { ["$return"] = Encode(result), ["$out"] = new JsonArray(byrefs.Select(pair => Encode(match.Arguments[pair.i])).ToArray()) };

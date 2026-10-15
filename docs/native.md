@@ -53,6 +53,10 @@ values carrying `type_name` and `name`. Python lists and tuples convert to array
 when a method accepts a compatible array or sequence interface. Collection
 proxies support `len`, iteration, integer/name indexing and writable indexers.
 Their upstream methods, such as `Add`, `Remove`, and `Clear`, remain available.
+`Color.GetRgb()`, `Color.GetTrueColorRgb()`, and `Color.GetIndexRGB(index)`
+return byte-array proxies, which can be converted with `list(...)` or `bytes(...)`.
+These three upstream methods return unboxable `ReadOnlySpan<byte>` values;
+the native bridge uses compiled adapters while preserving their method names.
 
 ```python
 with native.load() as cad:
@@ -127,7 +131,9 @@ using `TrimmerRootAssembly` and `rd.xml`. NativeAOT still emits trimming and
 dynamic-code analysis warnings for reflection and generic operations. These are
 not hidden: the test suite covers complete public-type discovery, every default
 constructible entity, metadata, model edits, collections, overloads, ref/out,
-ownership, and actual ASCII DXF, binary DXF and DWG round trips. This is evidence
+ownership, all 256 indexed colors, and actual ASCII DXF, binary DXF and DWG
+round trips. Twenty-one upstream reference drawings also exercise R12–2018 file
+versions with complex drawings. This is evidence
 for those operations, not a guarantee that every conceivable reflected call is
 AOT compatible. Use the managed backend if an operation requires unavailable
 runtime code or reflection metadata.

@@ -217,3 +217,102 @@ def test_malformed_request_stays_inside_c_boundary(runtime):
     finally:
         runtime._library.acadsharp_free(pointer)
     assert runtime.info()["abi"] == 1
+
+
+def test_closed_bcl_lists_dictionaries_arrays_and_value_types(runtime):
+    vertices = runtime.ACadSharp.Entities.LwPolyline().Vertices
+    first = runtime.ACadSharp.Entities.LwPolyline.Vertex(1.0, 2.0)
+    second = runtime.ACadSharp.Entities.LwPolyline.Vertex(3.0, 4.0)
+    vertices.AddRange([first, second])
+    assert len(vertices) == 2
+    vertices[0] = second
+    assert vertices[0].Location.X == 3.0
+    assert "AddRange" in dir(vertices)
+    vertices.RemoveAt(0)
+    assert len(vertices) == 1
+
+    # The closed List<double> needs native code for a value-type instantiation.
+    columns = runtime.ACadSharp.Entities.MText.TextColumnData()
+    columns.Heights.AddRange([1.5, 2.5, 3.5])
+    assert list(columns.Heights) == [1.5, 2.5, 3.5]
+    columns.Heights[1] = 9.5
+    assert columns.Heights[1] == 9.5
+
+    line = runtime.ACadSharp.Entities.Line()
+    data = runtime.ACadSharp.XData.ExtendedData()
+    data.Records.Add(runtime.ACadSharp.XData.ExtendedDataString("Hello"))
+    line.ExtendedData.Add("NativeTest", data)
+    mapping = line.ExtendedData.GetExtendedDataByName()
+    assert mapping["NativeTest"].Records[0].Value == "Hello"
+    assert list(mapping.Keys) == ["NativeTest"]
+    entries = list(mapping)
+    assert entries[0].Key == "NativeTest"
+    assert entries[0].Value.Records[0].Value == "Hello"
+
+    chunk = runtime.ACadSharp.XData.ExtendedDataBinaryChunk([0, 127, 255])
+    assert list(chunk.Value) == [0, 127, 255]
+    chunk.Value[1] = 42
+    assert list(chunk.Value) == [0, 42, 255]
+
+
+def test_session_and_iterator_lifetimes_under_repeated_use(runtime):
+    gc.collect()
+    baseline = runtime.info()["handle_count"]
+    for _ in range(20):
+        with native.load(library_path()) as other:
+            document = other.ACadSharp.CadDocument()
+            line = other.ACadSharp.Entities.Line()
+            line.EndPoint = other.CSMath.XYZ(3.0, 4.0, 5.0)
+            document.Entities.Add(line)
+            first = document.Entities[0]
+            second = document.Entities[0]
+            first.close()
+            assert second.EndPoint.Y == 4.0
+            iterator = iter(document.Entities)
+            assert next(iterator).type_name == "ACadSharp.Entities.Line"
+            iterator.close()
+            assert document.Entities.describe()["name"].startswith("ACadSharp.CadObjectCollection`1")
+        with pytest.raises(RuntimeError, match="released"):
+            _ = second.EndPoint
+        assert runtime.info()["handle_count"] == baseline
+    del document, line, first, second, iterator
+    gc.collect()
+    assert runtime.info()["handle_count"] == baseline
+
+
+SAMPLES = ROOT / "external/ACadSharp/samples"
+SAMPLE_NAMES = sorted(path.name for path in SAMPLES.glob("sample_*") if path.suffix in {".dxf", ".dwg"})
+
+
+@pytest.mark.parametrize("name", SAMPLE_NAMES or [None])
+def test_upstream_complex_samples(runtime, name):
+    if name is None:
+        pytest.skip("Upstream sample corpus is available in recursive Git checkouts")
+    document = runtime.read(SAMPLES / name)
+    expected = 164 if "AC1009" in name else 163
+    assert len(document.Entities) == expected
+    assert len(list(document.Entities)) == expected
+    assert len(document.BlockRecords) >= 27
+
+
+def test_color_span_methods_return_native_byte_arrays(runtime):
+    Color = runtime.ACadSharp.Color
+    for index in range(256):
+        rgb = list(Color.GetIndexRGB(index))
+        assert len(rgb) == 3
+        assert all(0 <= value <= 255 for value in rgb)
+        color = Color(index)
+        assert list(color.GetRgb()) == rgb
+        assert [color.R, color.G, color.B] == rgb
+    assert list(Color.GetIndexRGB(1)) == [255, 0, 0]
+    for rgb in ([12, 34, 56], [0, 0, 0], [255, 255, 255]):
+        color = Color(*rgb)
+        assert list(color.GetRgb()) == rgb
+        assert list(color.GetTrueColorRgb()) == rgb
+        assert list(Color(list(rgb)).GetRgb()) == rgb
+
+
+def test_uint64_parameters_preserve_full_range(runtime):
+    maximum = (1 << 64) - 1
+    handle = runtime.ACadSharp.XData.ExtendedDataHandle(maximum)
+    assert handle.Value == maximum
