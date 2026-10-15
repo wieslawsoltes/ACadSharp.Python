@@ -81,6 +81,12 @@ copy = acadsharp.loads(payload, format="dwg")
 acadsharp.write(copy, Path("copy.dxf"))
 ```
 
+## Color span adapters
+
+`acadsharp.colors.rgb(color)` returns the three RGB bytes from the upstream `Color.GetRgb()` operation. `acadsharp.colors.index_rgb(index)` returns the palette RGB bytes for an integer from 0 through 255. `acadsharp.colors.true_color_rgb(color)` returns three bytes for a true color and empty bytes for an indexed color, matching `Color.GetTrueColorRgb()`.
+
+These functions call a bundled compiled adapter because Python.NET cannot invoke stack-only span return values. See [interop](interop.md#stack-only-color-return-values) for examples. The original `Color` class remains unchanged.
+
 ## Convenience imports
 
 | Python module | Original managed namespace |

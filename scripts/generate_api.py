@@ -17,6 +17,10 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Python-only metadata import does not initialize the managed runtime.
+sys.path.insert(0, str(ROOT / "src"))
+from acadsharp.colors import ADAPTERS  # noqa: E402
+
 
 def typename(t):
     """Readable CLR signature including generic arguments, arrays and references."""
@@ -156,7 +160,7 @@ def member_record(member, xml):
     else:
         raise ValueError(f"Unhandled reflection member kind: {kind}")
     identity = xml_member_id(member)
-    return {"kind": kind.lower(), "name": str(member.Name), "signature": signature, "declaring_type": str(member.DeclaringType.FullName), "xml_id": identity, **documentation(xml.get(identity))}
+    return {"kind": kind.lower(), "name": str(member.Name), "signature": signature, "declaring_type": str(member.DeclaringType.FullName), "xml_id": identity, **({"python_adapter": ADAPTERS[identity]} if identity in ADAPTERS else {}), **documentation(xml.get(identity))}
 
 
 def inventory(assembly_path):
@@ -229,6 +233,8 @@ def markdown(data):
             lines += ["No declared public members.", ""]
         for member in t["members"]:
             lines += [f"### {member['name']}", "", "```text", member["signature"], "```", ""]
+            if member.get("python_adapter"):
+                lines += [f"**Python adapter:** `{member['python_adapter']}` returns Python `bytes`. The upstream method returns a stack-only span that Python.NET cannot invoke directly; the compiled adapter calls that exact operation and copies its result.", ""]
             if member["summary"]:
                 lines += [member["summary"], ""]
             if member.get("inheritdoc"):

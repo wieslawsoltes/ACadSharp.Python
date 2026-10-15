@@ -30,6 +30,8 @@ for layer in cad.Layers:
     print(layer.Name)
 ```
 
+A concrete overload pitfall is `Color`: `Color(System.Int16(1))` selects indexed color 1 (red), while `Color(1)` selects the integer true-color constructor. Use named colors such as `Color.Red`, or explicit `System.Int16` values for ACI palette indices.
+
 ## Overloads and out parameters
 
 Inspect `Type.Method.__doc__` or `help(Type)` to see the live method signatures. When automatic overload resolution is ambiguous, `Method.__overloads__[ParameterType, ...](...)` chooses an exact parameter list. Constructors also have `__overloads__`.
@@ -68,6 +70,28 @@ finally:
 A Python callable can back a .NET delegate. Retain the callable/delegate until the managed operation ends, and unsubscribe event handlers when their subscription is no longer needed. Use `source.Event += handler` and `source.Event -= handler` with the actual event from the reference.
 
 Dispose instances implementing `IDisposable` using `try/finally` and `Dispose()`. Do not rely on Python garbage collection to release file handles promptly. The package does not add thread safety to ACadSharp's mutable documents; coordinate access in your application.
+
+## Stack-only color return values
+
+Three upstream color methods return `ReadOnlySpan<byte>`, a stack-only .NET type that Python.NET cannot return to Python. Use the compiled adapters, which invoke the original methods and return copied Python `bytes`:
+
+| Upstream operation | Python adapter |
+| --- | --- |
+| `color.GetRgb()` | `acadsharp.colors.rgb(color)` |
+| `color.GetTrueColorRgb()` | `acadsharp.colors.true_color_rgb(color)` |
+| `Color.GetIndexRGB(index)` | `acadsharp.colors.index_rgb(index)` |
+
+```python
+from acadsharp import Color
+from acadsharp.colors import rgb, true_color_rgb, index_rgb
+
+assert rgb(Color.Red) == bytes((255, 0, 0))
+assert true_color_rgb(Color(12, 34, 56)) == bytes((12, 34, 56))
+assert true_color_rgb(Color.Red) == b""  # Original indexed-color behavior.
+assert index_rgb(5) == bytes((0, 0, 255))
+```
+
+The original `Color` type and its identity are preserved. Calling these three span-returning methods directly raises a .NET `NotSupportedException` through Python.NET. `Color.R`, `Color.G`, and `Color.B` work directly. The adapter copies the actual upstream result, including its indexed-color and sentinel behavior. A reflection test checks every public method for stack-only/pointer signatures and fails if upstream adds an operation without an adapter.
 
 ## Type hints
 

@@ -3019,6 +3019,7 @@
           "signature": "static System.ReadOnlySpan[System.Byte] GetIndexRGB(System.Byte index)",
           "declaring_type": "ACadSharp.Color",
           "xml_id": "M:ACadSharp.Color.GetIndexRGB(System.Byte)",
+          "python_adapter": "acadsharp.colors.index_rgb",
           "summary": "Returns the RGB color code which matches the passed indexed color.",
           "returns": "Approximate RGB color from indexed color."
         },
@@ -3028,6 +3029,7 @@
           "signature": "System.ReadOnlySpan[System.Byte] GetRgb()",
           "declaring_type": "ACadSharp.Color",
           "xml_id": "M:ACadSharp.Color.GetRgb",
+          "python_adapter": "acadsharp.colors.rgb",
           "summary": "Returns the RGB color code"
         },
         {
@@ -3036,6 +3038,7 @@
           "signature": "System.ReadOnlySpan[System.Byte] GetTrueColorRgb()",
           "declaring_type": "ACadSharp.Color",
           "xml_id": "M:ACadSharp.Color.GetTrueColorRgb",
+          "python_adapter": "acadsharp.colors.true_color_rgb",
           "summary": "Returns the RGB color code using the true color value.",
           "remarks": "If the color is not ACadSharp.Color.IsTrueColor it will return the default values for RGB"
         },

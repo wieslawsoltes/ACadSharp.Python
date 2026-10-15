@@ -53,6 +53,8 @@ def test_inventory_covers_declared_public_members(entry, assembly):
     # Properties/events represent their accessors. Nested types have independent
     # records, and the enum backing field is an implementation detail.
     expected = {}
+    python_type = acadsharp.get_type(entry["fullname"])
+    python_names = dir(python_type)
     for member in members:
         kind, name = str(member.MemberType).lower(), str(member.Name)
         if kind == "nestedtype" or (kind == "field" and name == "value__"):
@@ -60,6 +62,18 @@ def test_inventory_covers_declared_public_members(entry, assembly):
         if kind == "method" and member.IsSpecialName and not name.startswith("op_"):
             continue
         expected[(kind, name)] = expected.get((kind, name), 0) + 1
+        # Verify the public binding exists too; metadata alone cannot prove exposure.
+        if kind == "constructor":
+            continue
+        if kind == "field" and not member.IsStatic:
+            assert name in python_names  # Instance fields reject class-level reads.
+        elif kind == "property" and len(member.GetIndexParameters()):
+            if member.GetGetMethod() is not None:
+                assert hasattr(python_type, "__getitem__")
+            if member.GetSetMethod() is not None:
+                assert hasattr(python_type, "__setitem__")
+        else:
+            getattr(python_type, name)
     actual = {}
     for member in entry["members"]:
         key = (member["kind"], member["name"])

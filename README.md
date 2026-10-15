@@ -28,7 +28,7 @@ for entity in restored.Entities:
     print(entity.ObjectName, entity.Handle)
 ```
 
-The public .NET spelling remains intact: `StartPoint`, `Layers`, `Add`, and `Read` work as in ACadSharp. Original `ACadSharp`, `CSMath`, and `CSUtilities` namespaces are available after `acadsharp.load()`. Nested types and generics are available too; the generated reference inventories every exported type and its declared public members.
+The public .NET spelling remains intact: `StartPoint`, `Layers`, `Add`, and `Read` work as in ACadSharp. Original `ACadSharp`, `CSMath`, and `CSUtilities` namespaces are available after `acadsharp.load()`. Nested types and generics are available too; the generated reference inventories every exported type and its declared public members. Three span-returning color operations use [compiled Python adapters](docs/interop.md#stack-only-color-return-values), preserving their original behavior as Python bytes.
 
 An optional Native AOT backend runs through `ctypes` without Python.NET or an installed .NET runtime. It provides its own documented operation set; it does **not** expose the entire managed object model. See the [native backend guide](docs/native.md) for supported operations, builds, platforms and limitations.
 

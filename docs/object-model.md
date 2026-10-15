@@ -95,4 +95,6 @@ A chained assignment such as `line.StartPoint.X = 25` can modify only the boxed 
 
 Every exported public type is included in the generated inventory, including interfaces, delegates, nested classes and open generics. The tests compare that inventory against the loaded assembly and resolve each exported type through the Python package. Functional tests separately exercise document editing and CAD file I/O. This verifies API exposure; it is not a claim that every upstream CAD operation or every possible drawing has been exhaustively tested.
 
+Three `Color` methods return stack-only spans that Python.NET cannot invoke directly. The [compiled color adapters](interop.md#stack-only-color-return-values) make those operations available as Python bytes while preserving their upstream behavior. Their replacements are marked in the generated reference.
+
 The binding keeps upstream names and semantics. File-format support is defined by the pinned ACadSharp revision. See the upstream README and the package's generated reference when checking a feature or an overload.

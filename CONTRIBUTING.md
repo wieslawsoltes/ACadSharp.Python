@@ -23,6 +23,7 @@ Use the commands from [releasing](docs/releasing.md) to inspect and validate whe
 
 - `src/acadsharp`: lazy managed loader, namespace access, helpers, native Python interface and generated API inventory.
 - `external/ACadSharp`: pinned upstream Git submodule, including recursive dependencies.
+- `managed/ACadSharp.Python`: compiled adapters for public stack-only signatures Python.NET cannot marshal.
 - `native`: Native AOT bridge implementation.
 - `scripts`: reproducible managed/native builds, reference generation and packaging verification.
 - `tests`: Python tests, including exhaustive exported-type inventory/resolution and functional CAD round trips.

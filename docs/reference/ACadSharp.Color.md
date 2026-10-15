@@ -113,6 +113,8 @@ Documentation inherited from: `base member`.
 static System.ReadOnlySpan[System.Byte] GetIndexRGB(System.Byte index)
 ```
 
+**Python adapter:** `acadsharp.colors.index_rgb` returns Python `bytes`. The upstream method returns a stack-only span that Python.NET cannot invoke directly; the compiled adapter calls that exact operation and copies its result.
+
 Returns the RGB color code which matches the passed indexed color.
 
 **Returns:** Approximate RGB color from indexed color.
@@ -123,6 +125,8 @@ Returns the RGB color code which matches the passed indexed color.
 System.ReadOnlySpan[System.Byte] GetRgb()
 ```
 
+**Python adapter:** `acadsharp.colors.rgb` returns Python `bytes`. The upstream method returns a stack-only span that Python.NET cannot invoke directly; the compiled adapter calls that exact operation and copies its result.
+
 Returns the RGB color code
 
 ### GetTrueColorRgb
@@ -130,6 +134,8 @@ Returns the RGB color code
 ```text
 System.ReadOnlySpan[System.Byte] GetTrueColorRgb()
 ```
+
+**Python adapter:** `acadsharp.colors.true_color_rgb` returns Python `bytes`. The upstream method returns a stack-only span that Python.NET cannot invoke directly; the compiled adapter calls that exact operation and copies its result.
 
 Returns the RGB color code using the true color value.
 
