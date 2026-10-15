@@ -28,7 +28,7 @@ classifiers = [
 [project.optional-dependencies]
 managed = ["pythonnet>=3.2.1,<4"]
 native = ["acadsharp-native==0.1.0"]
-dev = ["pythonnet>=3.2.1,<4", "pytest>=8,<10", "build>=1.2,<2", "twine>=6,<7", "ruff>=0.11,<1"]
+dev = ["pythonnet>=3.2.1,<4", "pytest>=8,<10", "build>=1.2,<2", "twine>=6,<8", "ruff>=0.11,<1"]
 docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.6,<10"]
 
 [project.urls]
