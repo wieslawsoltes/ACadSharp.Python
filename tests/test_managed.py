@@ -273,3 +273,23 @@ def test_missing_assembly_and_conflicting_runtime_configuration(tmp_path):
     )
     assert result.returncode != 0
     assert "ACadSharp assembly not found" in result.stderr
+
+
+def test_every_public_default_constructible_entity():
+    """Exercise the whole entity family rather than a hand-picked projection."""
+    import clr
+    from System import Type
+
+    entity_type = clr.GetClrType(Entity)
+    candidates = [
+        item for item in ac.load().GetExportedTypes()
+        if entity_type.IsAssignableFrom(item) and not item.IsAbstract
+        and item.GetConstructor(Type.EmptyTypes) is not None
+    ]
+    assert candidates
+    for item in candidates:
+        entity = ac.get_type(str(item.FullName))()
+        assert isinstance(entity, Entity), str(item.FullName)
+        assert entity.ObjectName is not None, str(item.FullName)
+        entity.Color = Color(30, 60, 90)
+        assert entity.Color == Color(30, 60, 90), str(item.FullName)
