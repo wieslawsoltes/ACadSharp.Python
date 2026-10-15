@@ -301,7 +301,9 @@ def test_color_span_methods_return_native_byte_arrays(runtime):
         rgb = list(Color.GetIndexRGB(index))
         assert len(rgb) == 3
         assert all(0 <= value <= 255 for value in rgb)
-        color = Color(index)
+        color = Color(index, signature=["System.Int16"])
+        assert color.Index == index
+        assert color.IsTrueColor is False
         assert list(color.GetRgb()) == rgb
         assert [color.R, color.G, color.B] == rgb
     assert list(Color.GetIndexRGB(1)) == [255, 0, 0]
