@@ -34,20 +34,55 @@ jobs:
     uses: ./.github/workflows/build.yml
 
   publish:
+    name: Publish ${{ matrix.project }}
     needs: build
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: acadsharp
+            artifact_pattern: distributions-managed
+            filename_prefix: acadsharp
+            pypi_environment: pypi
+            testpypi_environment: testpypi
+          - project: acadsharp-native
+            artifact_pattern: distributions-native-*
+            filename_prefix: acadsharp_native
+            pypi_environment: pypi-native
+            testpypi_environment: testpypi-native
     environment:
-      name: ${{ inputs.index == 'testpypi' && 'testpypi' || 'pypi' }}
-      url: ${{ inputs.index == 'testpypi' && 'https://test.pypi.org/project/acadsharp/' || 'https://pypi.org/project/acadsharp/' }}
+      name: ${{ inputs.index == 'testpypi' && matrix.testpypi_environment || matrix.pypi_environment }}
+      url: ${{ format('{0}/project/{1}/', inputs.index == 'testpypi' && 'https://test.pypi.org' || 'https://pypi.org', matrix.project) }}
     permissions:
       id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: distributions-*
+          pattern: ${{ matrix.artifact_pattern }}
           merge-multiple: true
           path: dist
-      - name: Publish both distributions with Trusted Publishing
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify artifacts belong to this publishing identity
+        env:
+          DISTRIBUTION_PREFIX: ${{ matrix.filename_prefix }}
+        run: |
+          python - <<'PYTHON'
+          import os
+          from pathlib import Path
+
+          artifacts = list(Path("dist").iterdir())
+          if not artifacts:
+              raise SystemExit("No distributions were downloaded")
+          prefix = os.environ["DISTRIBUTION_PREFIX"] + "-"
+          for artifact in artifacts:
+              if (not artifact.is_file() or not artifact.name.startswith(prefix)
+                      or not artifact.name.endswith((".whl", ".tar.gz"))):
+                  raise SystemExit(f"Unexpected artifact for {prefix}: {artifact}")
+          PYTHON
+      - name: Publish this distribution with Trusted Publishing
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: ${{ inputs.index == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}

@@ -169,7 +169,7 @@ to `native.load(path)`. A built wheel finds its library through the
 
 ## C ABI
 
-[`acadsharp_native.h`](https://github.com/wieslawsoltes/ACadSharp.Python/blob/feature/python-bindings/native/ACadSharp.Native/acadsharp_native.h) declares the
+[`acadsharp_native.h`](https://github.com/wieslawsoltes/ACadSharp.Python/blob/v0.1.0/native/ACadSharp.Native/acadsharp_native.h) declares the
 three exports: `acadsharp_abi_version`, `acadsharp_call` and `acadsharp_free`.
 ABI version 1 accepts null-terminated UTF-8 JSON requests. Every allocated
 response, including an error, must be freed exactly once with `acadsharp_free`.
