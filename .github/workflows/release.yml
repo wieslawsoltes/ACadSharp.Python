@@ -1,0 +1,73 @@
+name: Release to PyPI
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      index:
+        description: Package index (production requires an exact version tag)
+        type: choice
+        options: [testpypi, pypi]
+        default: testpypi
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify tag and distribution versions agree
+        env:
+          RELEASE_INDEX: ${{ inputs.index || 'pypi' }}
+        run: python scripts/check_release.py
+
+  build:
+    needs: version
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ inputs.index == 'testpypi' && 'testpypi' || 'pypi' }}
+      url: ${{ inputs.index == 'testpypi' && 'https://test.pypi.org/project/acadsharp/' || 'https://pypi.org/project/acadsharp/' }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: distributions-*
+          merge-multiple: true
+          path: dist
+      - name: Publish both distributions with Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: ${{ inputs.index == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+          attestations: true
+
+  github-release:
+    needs: publish
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: distributions-*
+          merge-multiple: true
+          path: dist
+      - name: Attach verified distributions to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" dist/* --verify-tag --generate-notes

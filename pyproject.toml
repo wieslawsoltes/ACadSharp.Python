@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=77", "wheel>=0.45"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acadsharp"
+version = "0.1.0"
+description = "Complete ACadSharp CAD object model for Python, with managed and native backends"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "Wiesław Šoltés"}]
+keywords = ["cad", "dwg", "dxf", "acadsharp", "pythonnet"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: C#",
+  "Topic :: Scientific/Engineering",
+]
+
+[project.optional-dependencies]
+managed = ["pythonnet>=3.2.1,<4"]
+native = ["acadsharp-native==0.1.0"]
+dev = ["pythonnet>=3.2.1,<4", "pytest>=8,<10", "build>=1.2,<2", "twine>=6,<7", "ruff>=0.11,<1"]
+docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.6,<10"]
+
+[project.urls]
+Homepage = "https://github.com/wieslawsoltes/ACadSharp.Python"
+Documentation = "https://wieslawsoltes.github.io/ACadSharp.Python/"
+Repository = "https://github.com/wieslawsoltes/ACadSharp.Python"
+Issues = "https://github.com/wieslawsoltes/ACadSharp.Python/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["acadsharp*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+acadsharp = ["py.typed", "*.json", "*.pyi", "_managed/*.dll", "_managed/*.xml", "_managed/*.json", "_managed/licenses/*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["native: requires a compiled NativeAOT shared library"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["external"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

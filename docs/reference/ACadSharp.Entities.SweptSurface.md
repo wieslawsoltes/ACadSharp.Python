@@ -1,0 +1,50 @@
+# ACadSharp.Entities.SweptSurface
+
+`class` · `ACadSharp` · CLR name: `ACadSharp.Entities.SweptSurface`
+
+Represents a ACadSharp.Entities.SweptSurface entity.
+
+Object name F:ACadSharp.DxfFileToken.EntitySweptSurface Dxf class name F:ACadSharp.DxfSubclassMarker.SweptSurface
+
+Base type: `ACadSharp.Entities.Surface`. Inherited members are documented on their declaring type.
+
+Interfaces: `ACadSharp.Classes.IDxfClassDefined`, `ACadSharp.Entities.IEntity`, `ACadSharp.Entities.IGeometricEntity`, `ACadSharp.IHandledCadObject`.
+
+```python
+import acadsharp
+Type = acadsharp.get_type('ACadSharp.Entities.SweptSurface')
+```
+
+## Declared public members
+
+Signatures retain CLR types and names. Python.NET resolves overloads and converts compatible Python values at call time. Property setters are shown only when public. Operators retain their CLR names; Python.NET also maps supported operators to Python syntax.
+
+### .ctor
+
+```text
+ACadSharp.Entities.SweptSurface()
+```
+
+### GetDxfClass
+
+```text
+ACadSharp.Classes.DxfClass GetDxfClass()
+```
+
+Documentation inherited from: `base member`.
+
+### ObjectName
+
+```text
+System.String ObjectName { get; }
+```
+
+Documentation inherited from: `base member`.
+
+### SubclassMarker
+
+```text
+System.String SubclassMarker { get; }
+```
+
+Documentation inherited from: `base member`.
