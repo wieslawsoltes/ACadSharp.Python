@@ -207,3 +207,69 @@ def test_invalid_inputs_and_managed_exceptions(tmp_path):
     document.Entities.Add(line)
     with pytest.raises(ArgumentException):
         document.Entities.Add(line)
+
+
+def test_configuration_round_trip_and_validation_before_file_creation(tmp_path):
+    from acadsharp.io import DwgWriterConfiguration, DxfReaderConfiguration, DxfWriterConfiguration
+
+    document = CadDocument()
+    line = Line()
+    line.EndPoint = XYZ(1.234567, 2, 3)
+    document.Entities.Add(line)
+    configuration = DxfWriterConfiguration()
+    configuration.DecimalPrecision = 3
+    data = ac.dumps(document, configuration=configuration)
+    restored = ac.loads(data, format="dxf", configuration=DxfReaderConfiguration())
+    assert restored.Entities[0].EndPoint.X == pytest.approx(1.235)
+    path = tmp_path / "existing.dxf"
+    path.write_bytes(b"original")
+    with pytest.raises(TypeError, match="DxfWriterConfiguration"):
+        ac.write(document, path, configuration=DwgWriterConfiguration())
+    assert path.read_bytes() == b"original"
+    with pytest.raises(TypeError, match="CadDocument"):
+        ac.write(object(), path)
+    assert path.read_bytes() == b"original"
+
+
+def test_managed_stream_overloads_and_disposal():
+    from acadsharp.io import DxfReader, DxfWriter
+    from System.IO import MemoryStream
+
+    # Direct API remains available alongside Python path/bytes conveniences.
+    stream = MemoryStream()
+    writer = DxfWriter(stream, drawing(), True)
+    try:
+        writer.Write()
+        payload = stream.ToArray()
+    finally:
+        writer.Dispose()
+    input_stream = MemoryStream(payload)
+    reader = DxfReader(input_stream)
+    try:
+        assert_drawing(reader.Read(), "dxf")
+    finally:
+        reader.Dispose()
+    assert not input_stream.CanRead
+
+
+def test_delegate_callback_and_namespace_star_import():
+    from acadsharp.io import NotificationEventArgs, NotificationEventHandler, NotificationType
+
+    received = []
+    callback = NotificationEventHandler(lambda sender, args: received.append(args.Message))
+    callback(None, NotificationEventArgs("from .NET", NotificationType.Warning))
+    assert received == ["from .NET"]
+    exports = {}
+    exec("from acadsharp.entities import *", exports)
+    assert exports["Line"] is Line
+
+
+def test_missing_assembly_and_conflicting_runtime_configuration(tmp_path):
+    with pytest.raises(RuntimeError, match="already loaded"):
+        ac.load(assembly_dir=tmp_path)
+    result = subprocess.run(
+        [sys.executable, "-c", "import acadsharp, sys; acadsharp.load(assembly_dir=sys.argv[1])", str(tmp_path)],
+        text=True, capture_output=True,
+    )
+    assert result.returncode != 0
+    assert "ACadSharp assembly not found" in result.stderr
