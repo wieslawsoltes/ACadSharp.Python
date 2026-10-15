@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0
+## 0.1.0 (unreleased)
 
 Initial Python distribution of the pinned ACadSharp public object model.
 
