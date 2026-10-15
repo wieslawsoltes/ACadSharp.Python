@@ -6,13 +6,12 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+dist-native*/
+dist-managed*/
 site/
 artifacts/
 **/bin/
 **/obj/
-src/acadsharp/_managed/*.dll
-src/acadsharp/_managed/*.pdb
-src/acadsharp/_managed/*.xml
-src/acadsharp/_managed/*.deps.json
+src/acadsharp/_managed/
 src/acadsharp/_native/
 .DS_Store
