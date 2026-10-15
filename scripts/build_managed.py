@@ -20,7 +20,8 @@ FRAMEWORK = "net10.0"
 def source_digest() -> str:
     """Identify build inputs independently of checkout location and timestamps."""
     digest = hashlib.sha256()
-    inputs = [Path(__file__).resolve()]
+    inputs = [Path(__file__).resolve(), ROOT / "upstream-versions.json",
+              UPSTREAM / "LICENSE", UPSTREAM / "src/CSUtilities/LICENSE"]
     for path in (UPSTREAM / "src").rglob("*"):
         if path.is_file() and path.suffix in {
             ".cs", ".csproj", ".projitems", ".props", ".targets", ".snk"

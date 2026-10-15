@@ -109,8 +109,9 @@ jobs:
       - name: Install only native dependencies
         shell: bash
         run: |
-          python -m pip install dist-managed/*.whl dist-native/*.whl pytest
+          python -m pip install dist-managed/*.whl dist-native/*.whl pytest twine
           python -c "import importlib.util; assert importlib.util.find_spec('pythonnet') is None"
+          python -m twine check --strict dist-native/*
       - name: Test installed native wheel
         run: python -m pytest tests/test_native.py
       - uses: actions/upload-artifact@v4
@@ -135,4 +136,3 @@ jobs:
       - run: python -m ruff check src tests scripts setup.py packaging
       - run: python scripts/generate_api.py --assembly src/acadsharp/_managed/ACadSharp.dll --check
       - run: python -m mkdocs build --strict
-
